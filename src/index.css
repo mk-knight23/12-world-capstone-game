@@ -1,34 +1,53 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@layer base {
-    body {
-        @apply antialiased bg-[#020617] text-slate-400;
-    }
+@theme {
+    --color-os-void: #020617;
+    --color-os-cyan: #06b6d4;
+    --color-os-white: #fafafa;
+}
+
+body {
+    background-color: #020617;
+    color: #06b6d4;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 .scanline {
-    width: 100%;
-    height: 2px;
-    background: rgba(6, 182, 212, 0.1);
     position: absolute;
-    top: 0;
-    animation: scan 4s linear infinite;
-    z-index: 100;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    background: linear-gradient(to bottom,
+            transparent 50%,
+            rgba(6, 182, 212, 0.05) 51%);
+    background-size: 100% 4px;
+    animation: scan 10s linear infinite;
 }
 
 @keyframes scan {
-    0% {
-        top: 0;
+    from {
+        background-position: 0 0;
     }
 
-    100% {
-        top: 100%;
+    to {
+        background-position: 0 100%;
     }
 }
 
 .cyber-border {
     border: 1px solid rgba(6, 182, 212, 0.3);
-    box-shadow: 0 0 15px rgba(6, 182, 212, 0.1);
+    backdrop-filter: blur(4px);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(6, 182, 212, 0.05);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(6, 182, 212, 0.3);
+    border-radius: 9999px;
 }

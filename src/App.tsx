@@ -158,7 +158,7 @@ function App() {
                 <div className="flex gap-8">
                     <span>LAT: 40.7128 N</span>
                     <span>LNG: 74.0060 W</span>
-                    <span>MK_CORP DATABASE V2.0</span>
+                    <span>MK_CORP DATABASE V2.1 // 2026.EVOLUTION</span>
                 </div>
                 <div>
                     <span className="text-cyan-500/50 italic capitalize tracking-normal">Encrypted Transmission...</span>
