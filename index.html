@@ -3,234 +3,1013 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>World Analyzer // MK OS-X</title>
+    <title>WORLD_NET // Matrix Data Terminal</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --cyan: #06b6d4; --cyan-dim: rgba(6, 182, 212, 0.5); --cyan-faint: rgba(6, 182, 212, 0.1); --bg: #020617; --white: #fafafa; }
-        body { background-color: var(--bg); color: var(--cyan); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; height: 100vh; overflow: hidden; }
-        .scanline { position: fixed; inset: 0; pointer-events: none; z-index: 1000; background: linear-gradient(to bottom, transparent 50%, var(--cyan-faint) 51%); background-size: 100% 4px; animation: scan 10s linear infinite; }
-        @keyframes scan { from { background-position: 0 0; } to { background-position: 0 100%; } }
-        .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(var(--cyan-dim) 1px, transparent 1px), linear-gradient(90deg, var(--cyan-dim) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; opacity: 0.3; }
-        .app-container { display: flex; flex-direction: column; height: 100vh; position: relative; z-index: 1; }
-        header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--cyan-dim); background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); display: flex; justify-content: space-between; align-items: center; }
-        .logo { display: flex; align-items: center; gap: 1rem; }
-        .logo-icon { width: 40px; height: 40px; background: var(--cyan-faint); border: 1px solid var(--cyan-dim); border-radius: 8px; display: flex; align-items: center; justify-content: center; animation: pulse 2s ease-in-out infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
-        .logo h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; }
-        .logo h1 span { color: var(--white); }
-        .logo-subtitle { font-size: 0.6rem; opacity: 0.6; letter-spacing: 0.2em; text-transform: uppercase; }
-        .system-status { display: none; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; gap: 1.5rem; }
-        @media (min-width: 768px) { .system-status { display: flex; } }
-        main { display: flex; flex: 1; overflow: hidden; }
-        .sidebar { width: 320px; border-right: 1px solid var(--cyan-dim); background: rgba(0, 0, 0, 0.3); display: flex; flex-direction: column; display: none; }
-        @media (min-width: 768px) { .sidebar { display: flex; } }
-        .search-box { padding: 1rem; border-bottom: 1px solid var(--cyan-dim); }
-        .search-box input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; background: var(--cyan-faint); border: 1px solid var(--cyan-dim); border-radius: 6px; color: var(--cyan); font-family: inherit; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; }
-        .search-box input::placeholder { color: var(--cyan-dim); opacity: 0.5; }
-        .search-box input:focus { outline: none; border-color: var(--cyan); }
-        .search-icon { position: absolute; left: 1.5rem; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; opacity: 0.5; }
-        .search-wrapper { position: relative; }
-        .country-list { flex: 1; overflow-y: auto; }
-        .country-item { padding: 0.875rem 1rem; border-bottom: 1px solid var(--cyan-faint); cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
-        .country-item:hover { background: var(--cyan-faint); }
-        .country-item.active { background: var(--cyan-faint); border-left: 3px solid var(--cyan); }
-        .country-name { font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-        .country-meta { font-size: 0.65rem; opacity: 0.5; margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.1em; }
-        .country-arrow { opacity: 0; transition: opacity 0.2s; }
-        .country-item:hover .country-arrow { opacity: 0.5; }
-        .loading { padding: 2rem; text-align: center; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; animation: blink 1s ease-in-out infinite; }
-        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-        .content { flex: 1; overflow-y: auto; padding: 2rem; display: flex; flex-direction: column; position: relative; }
-        .content-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; opacity: 0.2; }
-        .content-empty svg { width: 80px; height: 80px; margin-bottom: 1.5rem; animation: spin 20s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .content-empty h2 { font-size: 1.25rem; letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 0.75rem; }
-        .content-empty p { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; max-width: 300px; line-height: 1.6; }
-        .country-detail { display: none; animation: fadeIn 0.3s ease; }
-        .country-detail.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .detail-header { display: flex; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap; }
-        .flag-container { width: 200px; height: 120px; border: 1px solid var(--cyan-dim); border-radius: 12px; overflow: hidden; background: rgba(0, 0, 0, 0.5); }
-        .flag-container img { width: 100%; height: 100%; object-fit: cover; }
-        .detail-title { flex: 1; min-width: 200px; }
-        .detail-title h2 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.02em; color: var(--white); text-transform: uppercase; margin-bottom: 0.75rem; }
-        .tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-        .tag { padding: 0.375rem 0.75rem; background: var(--cyan-faint); border: 1px solid var(--cyan-dim); border-radius: 9999px; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; }
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-        .info-card { padding: 1.25rem; background: var(--cyan-faint); border: 1px solid var(--cyan-dim); border-radius: 12px; }
-        .info-card-title { font-size: 0.65rem; opacity: 0.5; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.5rem; }
-        .info-card-value { font-size: 1.5rem; font-weight: 700; color: var(--white); }
-        .assessment { padding: 1.5rem; border: 1px solid var(--cyan-dim); border-radius: 16px; background: var(--cyan-faint); margin-top: auto; }
-        .assessment-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; }
-        .assessment p { font-size: 0.8rem; line-height: 1.6; opacity: 0.8; }
-        footer { padding: 0.75rem 1.5rem; border-top: 1px solid var(--cyan-dim); background: rgba(0, 0, 0, 0.5); display: flex; justify-content: space-between; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; flex-wrap: wrap; gap: 0.5rem; }
-        .status-text { font-style: italic; opacity: 0.5; letter-spacing: 0; }
-        @media (max-width: 640px) { .detail-header { flex-direction: column; } .flag-container { width: 100%; height: 100px; } .detail-title h2 { font-size: 1.75rem; } .content { padding: 1rem; } }
+
+        :root {
+            --matrix-green: #00ff41;
+            --matrix-dark: #003b00;
+            --matrix-bg: #0d0208;
+            --matrix-glow: rgba(0, 255, 65, 0.5);
+            --terminal-bg: #000a00;
+        }
+
+        body {
+            background: var(--matrix-bg);
+            color: var(--matrix-green);
+            font-family: 'Courier New', 'Consolas', monospace;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* === DIGITAL RAIN CANVAS === */
+        #matrix-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.15;
+        }
+
+        /* === TERMINAL CONTAINER === */
+        .terminal {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.95) 100%);
+        }
+
+        /* === SCANLINE EFFECT === */
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+        }
+
+        /* === CRT EFFECT === */
+        .crt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+        }
+
+        /* === HEADER === */
+        .header {
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid var(--matrix-green);
+            background: rgba(0, 20, 0, 0.9);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-transform: uppercase;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--matrix-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 5px var(--matrix-green); }
+            50% { box-shadow: 0 0 20px var(--matrix-green), 0 0 30px var(--matrix-green); }
+        }
+
+        .logo h1 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 0.2em;
+            text-shadow: 0 0 10px var(--matrix-green);
+        }
+
+        .logo-subtitle {
+            font-size: 0.6rem;
+            opacity: 0.7;
+            letter-spacing: 0.15em;
+        }
+
+        .system-status {
+            display: none;
+            font-size: 0.65rem;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .system-status { display: flex; }
+        }
+
+        .blink {
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* === MAIN LAYOUT === */
+        .main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* === SIDEBAR === */
+        .sidebar {
+            width: 320px;
+            border-right: 1px solid var(--matrix-dark);
+            background: rgba(0, 10, 0, 0.8);
+            display: none;
+            flex-direction: column;
+        }
+
+        @media (min-width: 768px) {
+            .sidebar { display: flex; }
+        }
+
+        .search-box {
+            padding: 1rem;
+            border-bottom: 1px solid var(--matrix-dark);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(0, 50, 0, 0.3);
+            border: 1px solid var(--matrix-dark);
+            color: var(--matrix-green);
+            font-family: inherit;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--matrix-green);
+            box-shadow: 0 0 10px var(--matrix-glow);
+        }
+
+        .search-box input::placeholder {
+            color: var(--matrix-dark);
+        }
+
+        .filter-group {
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid var(--matrix-dark);
+        }
+
+        .filter-group select {
+            width: 100%;
+            padding: 0.5rem;
+            background: rgba(0, 50, 0, 0.3);
+            border: 1px solid var(--matrix-dark);
+            color: var(--matrix-green);
+            font-family: inherit;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--matrix-green);
+        }
+
+        .country-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .country-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .country-list::-webkit-scrollbar-track {
+            background: rgba(0, 20, 0, 0.5);
+        }
+
+        .country-list::-webkit-scrollbar-thumb {
+            background: var(--matrix-dark);
+        }
+
+        .country-list::-webkit-scrollbar-thumb:hover {
+            background: var(--matrix-green);
+        }
+
+        .country-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--matrix-dark);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .country-item:hover {
+            background: rgba(0, 255, 65, 0.1);
+            padding-left: 1.25rem;
+        }
+
+        .country-item.active {
+            background: rgba(0, 255, 65, 0.15);
+            border-left: 3px solid var(--matrix-green);
+        }
+
+        .country-name {
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .country-meta {
+            font-size: 0.6rem;
+            opacity: 0.6;
+            margin-top: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .country-code {
+            font-size: 0.7rem;
+            opacity: 0.5;
+        }
+
+        .loading {
+            padding: 2rem;
+            text-align: center;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .load-more {
+            padding: 1rem;
+            text-align: center;
+            border-top: 1px solid var(--matrix-dark);
+        }
+
+        .load-more button {
+            padding: 0.625rem 1.25rem;
+            background: transparent;
+            border: 1px solid var(--matrix-green);
+            color: var(--matrix-green);
+            font-family: inherit;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .load-more button:hover {
+            background: var(--matrix-green);
+            color: #000;
+            box-shadow: 0 0 20px var(--matrix-glow);
+        }
+
+        .load-more button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* === CONTENT AREA === */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            opacity: 0.3;
+        }
+
+        .content-empty svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 2rem;
+            animation: spin 30s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .content-empty h2 {
+            font-size: 1.5rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px var(--matrix-glow);
+        }
+
+        .content-empty p {
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            max-width: 350px;
+            line-height: 1.8;
+        }
+
+        /* === COUNTRY DETAIL === */
+        .country-detail {
+            display: none;
+        }
+
+        .country-detail.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .detail-header {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--matrix-dark);
+            padding-bottom: 2rem;
+        }
+
+        .flag-container {
+            width: 200px;
+            height: 120px;
+            border: 2px solid var(--matrix-green);
+            overflow: hidden;
+            background: rgba(0, 50, 0, 0.3);
+            box-shadow: 0 0 20px var(--matrix-glow);
+        }
+
+        .flag-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .detail-title {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .detail-title h2 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+            text-shadow: 0 0 20px var(--matrix-glow);
+        }
+
+        .tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 0.375rem 0.75rem;
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--matrix-green);
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* === INFO GRID === */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-card {
+            padding: 1.25rem;
+            background: rgba(0, 50, 0, 0.2);
+            border: 1px solid var(--matrix-dark);
+        }
+
+        .info-card-title {
+            font-size: 0.65rem;
+            opacity: 0.6;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-card-value {
+            font-size: 1.75rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--matrix-glow);
+        }
+
+        /* === COMPARISON SECTION === */
+        .comparison {
+            padding: 1.5rem;
+            background: rgba(0, 50, 0, 0.15);
+            border: 1px solid var(--matrix-dark);
+            margin-bottom: 2rem;
+        }
+
+        .comparison h3 {
+            font-size: 0.9rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .comparison-select {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .comparison-select select {
+            flex: 1;
+            min-width: 150px;
+            padding: 0.75rem;
+            background: rgba(0, 50, 0, 0.3);
+            border: 1px solid var(--matrix-dark);
+            color: var(--matrix-green);
+            font-family: inherit;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .comparison-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 2px solid var(--matrix-green);
+            font-size: 0.8rem;
+            line-height: 1.6;
+        }
+
+        /* === TERMINAL OUTPUT === */
+        .terminal-output {
+            padding: 1.5rem;
+            background: #000;
+            border: 1px solid var(--matrix-dark);
+            font-size: 0.75rem;
+            line-height: 1.6;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .terminal-line {
+            margin-bottom: 0.25rem;
+        }
+
+        .terminal-line.success { color: var(--matrix-green); }
+        .terminal-line.warning { color: #ffff00; }
+        .terminal-line.error { color: #ff0000; }
+        .terminal-line.info { color: #00ffff; }
+
+        /* === FOOTER === */
+        .footer {
+            padding: 0.75rem 1.5rem;
+            border-top: 1px solid var(--matrix-dark);
+            background: rgba(0, 20, 0, 0.9);
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .footer-brand {
+            color: var(--matrix-green);
+            text-shadow: 0 0 5px var(--matrix-glow);
+        }
+
+        /* === FAVORITES === */
+        .favorites-bar {
+            padding: 0.5rem 1rem;
+            background: rgba(0, 30, 0, 0.5);
+            border-bottom: 1px solid var(--matrix-dark);
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+        }
+
+        .favorite-chip {
+            padding: 0.375rem 0.75rem;
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--matrix-dark);
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .favorite-chip:hover {
+            border-color: var(--matrix-green);
+            background: rgba(0, 255, 65, 0.2);
+        }
+
+        .favorite-remove {
+            opacity: 0.5;
+            cursor: pointer;
+        }
+
+        .favorite-remove:hover {
+            opacity: 1;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 640px) {
+            .detail-header { flex-direction: column; }
+            .flag-container { width: 100%; height: 100px; }
+            .detail-title h2 { font-size: 1.5rem; }
+            .content { padding: 1rem; }
+        }
     </style>
 </head>
 <body>
+    <canvas id="matrix-rain"></canvas>
     <div class="scanline"></div>
-    <div class="grid-bg"></div>
-    <div class="app-container">
-        <header>
+    <div class="crt"></div>
+
+    <div class="terminal">
+        <header class="header">
             <div class="logo">
                 <div class="logo-icon">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M2 12h20"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
                     </svg>
                 </div>
                 <div>
-                    <h1>World <span>Analyzer</span></h1>
-                    <p class="logo-subtitle">MK_OS-X // Geopolitical Data Unit</p>
+                    <h1>WORLD_NET <span class="blink">_</span></h1>
+                    <p class="logo-subtitle">// GLOBAL DATA TERMINAL v3.1</p>
                 </div>
             </div>
             <div class="system-status">
-                <span>SYSTEM: ONLINE</span>
-                <span id="entity-count">DATA: 0 ENTITIES</span>
+                <span>SYSTEM: <span class="blink">ONLINE</span></span>
+                <span id="entity-count">ENTITIES: LOADING...</span>
+                <span id="clock">00:00:00</span>
             </div>
         </header>
-        <main>
-            <div class="sidebar">
+
+        <main class="main">
+            <aside class="sidebar">
                 <div class="search-box">
-                    <div class="search-wrapper">
-                        <svg class="search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-                        </svg>
-                        <input type="text" id="search" placeholder="PROBE ENTITY NAME...">
+                    <input type="text" id="search" placeholder="SEARCH_DATABASE...">
+                </div>
+                <div class="filter-group">
+                    <select id="region-filter">
+                        <option value="">ALL_REGIONS</option>
+                    </select>
+                </div>
+                <div class="favorites-bar" id="favorites-bar"></div>
+                <div class="country-list" id="country-list">
+                    <div class="loading">
+                        <span class="blink">CONNECTING TO MAINFRAME...</span>
                     </div>
                 </div>
-                <div class="country-list" id="country-list">
-                    <div class="loading">INITIALIZING SATELLITE FEED...</div>
+                <div class="load-more" id="load-more" style="display: none;">
+                    <button id="load-more-btn">LOAD_MORE_RECORDS</button>
                 </div>
-            </div>
-            <div class="content">
+            </aside>
+
+            <section class="content">
                 <div class="content-empty" id="content-empty">
                     <svg fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M2 12h20"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
                     </svg>
-                    <h2>Awaiting Selection</h2>
-                    <p>Initialize probe by selecting a global entity from the primary list unit.</p>
+                    <h2>AWAITING_INPUT</h2>
+                    <p>Select an entity from the database to initiate visualization protocol.</p>
                 </div>
+
                 <div class="country-detail" id="country-detail">
                     <div class="detail-header">
                         <div class="flag-container">
                             <img id="detail-flag" src="" alt="">
                         </div>
                         <div class="detail-title">
-                            <h2 id="detail-name">COUNTRY NAME</h2>
+                            <h2 id="detail-name">ENTITY_NAME</h2>
                             <div class="tags">
                                 <span class="tag" id="detail-region">REGION</span>
                                 <span class="tag" id="detail-capital">CAPITAL</span>
+                                <span class="tag" id="detail-code" style="cursor:pointer" onclick="toggleFavorite()">★ SAVE</span>
                             </div>
                         </div>
                     </div>
+
                     <div class="info-grid">
                         <div class="info-card">
-                            <div class="info-card-title">Population</div>
+                            <div class="info-card-title">POPULATION</div>
                             <div class="info-card-value" id="detail-population">0</div>
                         </div>
                         <div class="info-card">
-                            <div class="info-card-title">Area</div>
+                            <div class="info-card-title">LAND_AREA</div>
                             <div class="info-card-value" id="detail-area">0 KM²</div>
                         </div>
                         <div class="info-card">
-                            <div class="info-card-title">Entity ID</div>
-                            <div class="info-card-value" id="detail-code">XXX</div>
+                            <div class="info-card-title">DENSITY</div>
+                            <div class="info-card-value" id="detail-density">0/KM²</div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-title">GLOBAL_RANK</div>
+                            <div class="info-card-value" id="detail-rank">#0</div>
                         </div>
                     </div>
-                    <div class="assessment">
-                        <div class="assessment-header">
+
+                    <div class="comparison">
+                        <h3>
                             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                                <path d="M18 20V10M12 20V4M6 20v-6"/>
                             </svg>
-                            Geopolitical Assessment
+                            COMPARISON_MATRIX
+                        </h3>
+                        <div class="comparison-select">
+                            <select id="compare-country">
+                                <option value="">SELECT_ENTITY_TO_COMPARE</option>
+                            </select>
                         </div>
-                        <p id="detail-assessment">
-                            Analyzing localized data. Stability indices reflect standard regional variances.
-                            No immediate anomalies detected. Monitoring continues...
-                        </p>
+                        <div class="comparison-result" id="comparison-result">
+                            Select another entity to generate comparison analysis...
+                        </div>
+                    </div>
+
+                    <div class="terminal-output" id="terminal-output">
+                        <div class="terminal-line info">[SYSTEM] Initializing data visualization...</div>
+                        <div class="terminal-line info">[SYSTEM] Connection established to global database...</div>
                     </div>
                 </div>
-            </div>
+            </section>
         </main>
-        <footer>
-            <div class="footer-left">
-                <span>LAT: 40.7128 N</span>
-                <span style="margin-left: 1rem;">LNG: 74.0060 W</span>
-            </div>
-            <span class="status-text" id="status-text">ENCRYPTED TRANSMISSION...</span>
+
+        <footer class="footer">
+            <span class="footer-brand">MADE_BY_MK // BUILT_BY_MUSHARRAF_KAZI</span>
+            <span>TERMINAL_ID: <span id="terminal-id">UNKNOWN</span></span>
         </footer>
     </div>
+
     <script>
+        // === MATRIX DIGITAL RAIN EFFECT ===
+        const canvas = document.getElementById('matrix-rain');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const charArray = chars.split('');
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(13, 2, 8, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#00ff41';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = charArray[Math.floor(Math.random() * charArray.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 50);
+
+        // === CLOCK ===
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toTimeString().split(' ')[0];
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // === TERMINAL ID ===
+        document.getElementById('terminal-id').textContent = 'TRM-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+
+        // === DATA & STATE ===
         let countries = [];
         let selectedCountry = null;
+        let favorites = JSON.parse(localStorage.getItem('worldnet-favorites') || '[]');
+        let currentFiltered = [];
+        let currentPage = 0;
+        const pageSize = 50;
+
+        // === DOM ELEMENTS ===
         const countryList = document.getElementById('country-list');
         const searchInput = document.getElementById('search');
+        const regionFilter = document.getElementById('region-filter');
         const contentEmpty = document.getElementById('content-empty');
         const countryDetail = document.getElementById('country-detail');
         const entityCount = document.getElementById('entity-count');
-        const statusText = document.getElementById('status-text');
+        const loadMore = document.getElementById('load-more');
+        const loadMoreBtn = document.getElementById('load-more-btn');
+        const compareSelect = document.getElementById('compare-country');
+        const comparisonResult = document.getElementById('comparison-result');
+        const favoritesBar = document.getElementById('favorites-bar');
+        const terminalOutput = document.getElementById('terminal-output');
 
+        // === TERMINAL OUTPUT ===
+        function addTerminalLine(message, type = 'info') {
+            const line = document.createElement('div');
+            line.className = 'terminal-line ' + type;
+            line.textContent = `[${new Date().toTimeString().split(' ')[0]}] ${message}`;
+            terminalOutput.appendChild(line);
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        }
+
+        // === FETCH COUNTRIES ===
         async function fetchCountries() {
             try {
+                addTerminalLine('Establishing connection to global database...', 'info');
                 const response = await fetch('https://restcountries.com/v3.1/all?fields=name,capital,region,population,flags,cca3,area');
                 countries = await response.json();
-                countries.sort((a, b) => a.name.common.localeCompare(b.name.common));
-                entityCount.textContent = `DATA: ${countries.length} ENTITIES`;
-                statusText.textContent = 'LIVE FEED ACTIVE';
-                renderCountryList(countries.slice(0, 50));
+                countries.sort((a, b) => b.population - a.population); // Sort by population
+
+                entityCount.textContent = `ENTITIES: ${countries.length}`;
+                addTerminalLine(`Loaded ${countries.length} entities from database.`, 'success');
+
+                // Calculate population ranks
+                countries.forEach((c, i) => c.rank = i + 1);
+
+                // Populate region filter
+                const regions = [...new Set(countries.map(c => c.region))].sort();
+                regionFilter.innerHTML = '<option value="">ALL_REGIONS</option>' +
+                    regions.map(r => `<option value="${r}">${r.replace(/\s/g, '_')}</option>`).join('');
+
+                // Populate comparison dropdown
+                compareSelect.innerHTML = '<option value="">SELECT_ENTITY_TO_COMPARE</option>' +
+                    countries.slice(0, 50).map(c => `<option value="${c.cca3}">${c.name.common}</option>`).join('');
+
+                currentFiltered = countries;
+                renderCountryList(countries);
+                renderFavorites();
             } catch (error) {
-                countryList.innerHTML = '<div class="loading">CONNECTION FAILED. RETRYING...</div>';
+                addTerminalLine('Connection failed. Initializing retry protocol...', 'error');
+                countryList.innerHTML = '<div class="loading"><span class="blink">CONNECTION_FAILED. RETRYING...</span></div>';
                 setTimeout(fetchCountries, 3000);
             }
         }
 
-        function renderCountryList(list) {
+        // === RENDER COUNTRY LIST ===
+        function renderCountryList(list, append = false) {
+            if (!append) {
+                countryList.innerHTML = '';
+                currentPage = 0;
+            }
+
             if (list.length === 0) {
-                countryList.innerHTML = '<div class="loading">NO ENTITIES FOUND</div>';
+                countryList.innerHTML = '<div class="loading">NO_MATCHING_ENTITIES_FOUND</div>';
+                loadMore.style.display = 'none';
                 return;
             }
-            countryList.innerHTML = list.map(c => `
+
+            const page = list.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
+            const html = page.map(c => `
                 <div class="country-item ${selectedCountry?.cca3 === c.cca3 ? 'active' : ''}" data-code="${c.cca3}">
                     <div>
                         <div class="country-name">${c.name.common}</div>
-                        <div class="country-meta">${c.region} // ${c.cca3}</div>
+                        <div class="country-meta">${c.region.replace(/_/g, ' ')} // ${c.cca3}</div>
                     </div>
-                    <svg class="country-arrow" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M9 18l6-6-6-6"/>
-                    </svg>
+                    <span class="country-code">#${c.rank}</span>
                 </div>
             `).join('');
-            document.querySelectorAll('.country-item').forEach(item => {
+
+            if (append) {
+                countryList.insertAdjacentHTML('beforeend', html);
+            } else {
+                countryList.innerHTML = html;
+            }
+
+            document.querySelectorAll('.country-item:not(.bound)').forEach(item => {
+                item.classList.add('bound');
                 item.addEventListener('click', () => selectCountry(item.dataset.code));
             });
+
+            const totalPages = Math.ceil(list.length / pageSize);
+            loadMore.style.display = list.length > pageSize ? 'block' : 'none';
+            loadMoreBtn.disabled = currentPage >= totalPages - 1;
+            loadMoreBtn.textContent = currentPage >= totalPages - 1 ? 'ALL_RECORDS_LOADED' : `LOAD_MORE (${list.length - (currentPage + 1) * pageSize} REMAINING)`;
         }
 
+        loadMoreBtn.addEventListener('click', () => {
+            currentPage++;
+            renderCountryList(currentFiltered, true);
+        });
+
+        // === SELECT COUNTRY ===
         function selectCountry(code) {
             const country = countries.find(c => c.cca3 === code);
             if (!country) return;
+
             selectedCountry = country;
+            addTerminalLine(`Accessing entity: ${country.name.common}`, 'info');
+
             document.querySelectorAll('.country-item').forEach(item => {
                 item.classList.toggle('active', item.dataset.code === code);
             });
+
             contentEmpty.style.display = 'none';
             countryDetail.classList.add('active');
+
+            // Update detail view
             document.getElementById('detail-flag').src = country.flags.svg;
-            document.getElementById('detail-name').textContent = country.name.common;
-            document.getElementById('detail-region').textContent = country.region;
+            document.getElementById('detail-name').textContent = country.name.common.toUpperCase();
+            document.getElementById('detail-region').textContent = country.region.replace(/_/g, ' ');
             document.getElementById('detail-capital').textContent = country.capital?.[0] || 'N/A';
+            document.getElementById('detail-code').textContent = favorites.includes(code) ? '★ SAVED' : '★ SAVE';
             document.getElementById('detail-population').textContent = country.population.toLocaleString();
-            document.getElementById('detail-area').textContent = `${country.area.toLocaleString()} KM²`;
-            document.getElementById('detail-code').textContent = country.cca3;
+            document.getElementById('detail-area').textContent = country.area?.toLocaleString() + ' KM²' || 'N/A';
+            document.getElementById('detail-density').textContent = country.area ? Math.round(country.population / country.area).toLocaleString() + '/KM²' : 'N/A';
+            document.getElementById('detail-rank').textContent = '#' + country.rank;
         }
 
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            const filtered = countries.filter(c => c.name.common.toLowerCase().includes(query)).slice(0, 50);
-            renderCountryList(filtered);
+        // === FAVORITES ===
+        function toggleFavorite() {
+            if (!selectedCountry) return;
+
+            const code = selectedCountry.cca3;
+            const index = favorites.indexOf(code);
+
+            if (index > -1) {
+                favorites.splice(index, 1);
+                addTerminalLine(`Removed ${selectedCountry.name.common} from favorites.`, 'warning');
+            } else {
+                favorites.push(code);
+                addTerminalLine(`Added ${selectedCountry.name.common} to favorites.`, 'success');
+            }
+
+            localStorage.setItem('worldnet-favorites', JSON.stringify(favorites));
+            document.getElementById('detail-code').textContent = favorites.includes(code) ? '★ SAVED' : '★ SAVE';
+            renderFavorites();
+        }
+
+        function renderFavorites() {
+            if (favorites.length === 0) {
+                favoritesBar.innerHTML = '';
+                return;
+            }
+
+            const favCountries = favorites.map(code => countries.find(c => c.cca3 === code)).filter(Boolean);
+            favoritesBar.innerHTML = favCountries.map(c => `
+                <div class="favorite-chip" onclick="selectCountry('${c.cca3}')">
+                    ${c.name.common.substring(0, 10).toUpperCase()}
+                    <span class="favorite-remove" onclick="event.stopPropagation(); removeFavorite('${c.cca3}')">×</span>
+                </div>
+            `).join('');
+        }
+
+        function removeFavorite(code) {
+            favorites = favorites.filter(f => f !== code);
+            localStorage.setItem('worldnet-favorites', JSON.stringify(favorites));
+            renderFavorites();
+            if (selectedCountry?.cca3 === code) {
+                document.getElementById('detail-code').textContent = '★ SAVE';
+            }
+        }
+
+        // === COMPARISON ===
+        compareSelect.addEventListener('change', () => {
+            if (!selectedCountry || !compareSelect.value) {
+                comparisonResult.textContent = 'Select another entity to generate comparison analysis...';
+                return;
+            }
+
+            const compareCountry = countries.find(c => c.cca3 === compareSelect.value);
+            if (!compareCountry) return;
+
+            const popDiff = ((selectedCountry.population - compareCountry.population) / compareCountry.population * 100).toFixed(1);
+            const areaDiff = selectedCountry.area && compareCountry.area ?
+                ((selectedCountry.area - compareCountry.area) / compareCountry.area * 100).toFixed(1) : null;
+
+            let result = `COMPARISON: ${selectedCountry.name.common.toUpperCase()} vs ${compareCountry.name.common.toUpperCase()}\n`;
+            result += `─`.repeat(50) + `\n`;
+            result += `POPULATION: ${selectedCountry.name.common} is ${Math.abs(popDiff)}% ${parseFloat(popDiff) >= 0 ? 'larger' : 'smaller'}\n`;
+            if (areaDiff) {
+                result += `LAND AREA: ${selectedCountry.name.common} is ${Math.abs(areaDiff)}% ${parseFloat(areaDiff) >= 0 ? 'larger' : 'smaller'}\n`;
+            }
+            result += `─`.repeat(50) + `\n`;
+            result += `RANKING: #${selectedCountry.rank} vs #${compareCountry.rank}`;
+
+            comparisonResult.textContent = result;
+            comparisonResult.style.whiteSpace = 'pre-line';
+            addTerminalLine(`Generated comparison with ${compareCountry.name.common}`, 'success');
         });
 
+        // === SEARCH & FILTER ===
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        const debouncedSearch = debounce((query, region) => {
+            let filtered = countries;
+
+            if (region) {
+                filtered = filtered.filter(c => c.region === region);
+            }
+
+            if (query) {
+                filtered = filtered.filter(c =>
+                    c.name.common.toLowerCase().includes(query)
+                );
+            }
+
+            currentFiltered = filtered;
+            renderCountryList(filtered);
+            entityCount.textContent = query || region ? `RESULTS: ${filtered.length} ENTITIES` : `ENTITIES: ${countries.length}`;
+        }, 300);
+
+        let query = '';
+        searchInput.addEventListener('input', (e) => {
+            query = e.target.value.toLowerCase();
+            debouncedSearch(query, regionFilter.value);
+        });
+
+        regionFilter.addEventListener('change', (e) => {
+            debouncedSearch(query, e.target.value);
+        });
+
+        // === INITIALIZE ===
         fetchCountries();
+        addTerminalLine('WORLD_NET terminal initialized.', 'success');
+        addTerminalLine('Type to search. Click entity to view details.', 'info');
     </script>
 </body>
 </html>

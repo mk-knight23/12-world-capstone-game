@@ -170,7 +170,7 @@ function App() {
 
 function Tag({ label, value }: { label: string, value: string }) {
     return (
-        <div className="flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/30 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+        <div className="flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/30 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
             <span className="opacity-40">{label}:</span>
             <span>{value}</span>
         </div>
