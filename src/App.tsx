@@ -19,6 +19,7 @@ function App() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [selected, setSelected] = useState<Country | null>(null);
+    const [selectedRegion, setSelectedRegion] = useState<string>('All');
 
     useEffect(() => {
         axios.get('https://restcountries.com/v3.1/all')
@@ -30,12 +31,25 @@ function App() {
     }, []);
 
     useEffect(() => {
-        setFiltered(
-            countries.filter(c =>
+        let results = countries;
+
+        // Filter by region
+        if (selectedRegion !== 'All') {
+            results = results.filter(c => c.region === selectedRegion);
+        }
+
+        // Filter by search
+        if (search) {
+            results = results.filter(c =>
                 c.name.common.toLowerCase().includes(search.toLowerCase())
-            ).slice(0, 10)
-        );
-    }, [search, countries]);
+            );
+        }
+
+        setFiltered(results.slice(0, 20));
+    }, [search, countries, selectedRegion]);
+
+    // Get unique regions
+    const regions = ['All', ...Array.from(new Set(countries.map(c => c.region))).sort()];
 
     return (
         <div className="h-screen bg-[#020617] text-cyan-500 font-mono overflow-hidden flex flex-col relative">
@@ -58,7 +72,10 @@ function App() {
 
                 <div className="flex gap-8 text-[10px] font-bold uppercase tracking-widest hidden md:flex">
                     <div className="flex items-center gap-2"><Cpu className="w-3 h-3" /> SYSTEM: STABLE</div>
-                    <div className="flex items-center gap-2"><Database className="w-3 h-3" /> DATA: {countries.length} ENTITIES</div>
+                    <div className="flex items-center gap-2"><Database className="w-3 h-3" /> DATA: {filtered.length}/{countries.length} ENTITIES</div>
+                    {selectedRegion !== 'All' && (
+                        <div className="flex items-center gap-2 text-cyan-400"><Zap className="w-3 h-3" /> REGION: {selectedRegion}</div>
+                    )}
                 </div>
             </header>
 
@@ -66,7 +83,7 @@ function App() {
                 {/* Sidebar / List */}
                 <div className="w-96 border-r border-cyan-500/30 bg-black/20 backdrop-blur-sm flex flex-col z-40">
                     <div className="p-6 border-b border-cyan-500/20">
-                        <div className="relative">
+                        <div className="relative mb-4">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-50" />
                             <input
                                 type="text"
@@ -75,6 +92,29 @@ function App() {
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                             />
+                        </div>
+
+                        {/* Region Filter */}
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest opacity-60">
+                                <Database className="w-3 h-3" />
+                                Filter by Region
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {regions.map(region => (
+                                    <button
+                                        key={region}
+                                        onClick={() => setSelectedRegion(region)}
+                                        className={`px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded transition-all ${
+                                            selectedRegion === region
+                                                ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/50'
+                                                : 'bg-cyan-500/10 border border-cyan-500/30 hover:border-cyan-500/60'
+                                        }`}
+                                    >
+                                        {region}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
 
