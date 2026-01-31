@@ -136,3 +136,25 @@ The terminal displays data beautifully but can't export it. No CSV, no JSON down
 
 ### What I Chose NOT to Build
 No command history or autocomplete. Real terminals remember commands. This one doesn't. Each query is fresh. The decision: simplicity over power-user features. The terminal is a display, not a shell. Adding history would require state management that's overkill for the experience.
+
+## 🎉 Additional Features (V3)
+
+Three focused enhancements that improve data utility without breaking the terminal aesthetic:
+
+### Recent History Bar
+**Why added**: After browsing several countries, you might want to jump back to something you saw earlier. Without history, you're scrolling through the list again.
+
+**What changed**: A new "RECENT" bar below the filters shows your last 5 viewed countries as clickable chips. History persists across sessions using localStorage.
+
+### World Population Display
+**Why added**: The terminal shows individual country populations, but no context for global scale. Seeing 1.4B for China means more when you know the world total.
+
+**What changed**: The footer now displays "WORLD_POP" with the aggregated population of all countries (~8.1B). Updates automatically when data loads.
+
+### Copy to Clipboard
+**Why added**: The V2 README mentioned "no data export" as an intentional tradeoff. But sometimes you just want to copy one country's stats without screenshotting.
+
+**What changed**: Added a "COPY_DATA_TO_CLIPBOARD" button below the terminal output. It copies the selected country's data as formatted text. The button flashes green when copied, with a terminal log message confirming success.
+
+### Intentionally Rejected: CSV Export
+I still rejected full CSV/JSON export for all countries. That would require backend infrastructure or complex client-side processing. The copy button gives you a quick way to grab one entity's data—which covers 90% of actual use cases. If you need bulk export, use the API directly.

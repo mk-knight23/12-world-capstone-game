@@ -574,6 +574,64 @@
             opacity: 1;
         }
 
+        /* V3: Recent history bar */
+        .recent-bar {
+            padding: 0.5rem 1rem;
+            background: rgba(0, 20, 0, 0.3);
+            border-bottom: 1px solid var(--matrix-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            overflow-x: auto;
+            font-size: 0.6rem;
+        }
+
+        .recent-label {
+            color: var(--matrix-dark);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .recent-chip {
+            padding: 0.25rem 0.5rem;
+            background: rgba(0, 255, 65, 0.05);
+            border: 1px solid var(--matrix-dark);
+            cursor: pointer;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .recent-chip:hover {
+            border-color: var(--matrix-green);
+            background: rgba(0, 255, 65, 0.1);
+        }
+
+        /* V3: Copy button */
+        .copy-btn {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--matrix-dark);
+            color: var(--matrix-green);
+            font-family: inherit;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .copy-btn:hover {
+            border-color: var(--matrix-green);
+            background: rgba(0, 255, 65, 0.1);
+        }
+
+        .copy-btn.copied {
+            background: var(--matrix-green);
+            color: var(--matrix-bg);
+        }
+
         /* === RESPONSIVE === */
         @media (max-width: 640px) {
             .detail-header { flex-direction: column; }
@@ -619,6 +677,10 @@
                     <select id="region-filter">
                         <option value="">ALL_REGIONS</option>
                     </select>
+                </div>
+                <div class="recent-bar" id="recent-bar">
+                    <span class="recent-label">RECENT:</span>
+                    <span id="recent-list" style="display:flex;gap:0.5rem;"></span>
                 </div>
                 <div class="favorites-bar" id="favorites-bar"></div>
                 <div class="country-list" id="country-list">
@@ -697,12 +759,14 @@
                         <div class="terminal-line info">[SYSTEM] Initializing data visualization...</div>
                         <div class="terminal-line info">[SYSTEM] Connection established to global database...</div>
                     </div>
+                    <button class="copy-btn" id="copy-btn" onclick="copyCountryData()">COPY_DATA_TO_CLIPBOARD</button>
                 </div>
             </section>
         </main>
 
         <footer class="footer">
             <span class="footer-brand">MADE_BY_MK // BUILT_BY_MUSHARRAF_KAZI</span>
+            <span>WORLD_POP: <span id="world-pop">CALCULATING...</span></span>
             <span>TERMINAL_ID: <span id="terminal-id">UNKNOWN</span></span>
         </footer>
     </div>
@@ -760,6 +824,7 @@
         let countries = [];
         let selectedCountry = null;
         let favorites = JSON.parse(localStorage.getItem('worldnet-favorites') || '[]');
+        let recentHistory = JSON.parse(localStorage.getItem('worldnet-recent') || '[]');
         let currentFiltered = [];
         let currentPage = 0;
         const pageSize = 50;
@@ -798,6 +863,10 @@
                 entityCount.textContent = `ENTITIES: ${countries.length}`;
                 addTerminalLine(`Loaded ${countries.length} entities from database.`, 'success');
 
+                // V3: Calculate and display world population
+                const worldPop = countries.reduce((sum, c) => sum + (c.population || 0), 0);
+                document.getElementById('world-pop').textContent = formatNumber(worldPop);
+
                 // Calculate population ranks
                 countries.forEach((c, i) => c.rank = i + 1);
 
@@ -813,6 +882,7 @@
                 currentFiltered = countries;
                 renderCountryList(countries);
                 renderFavorites();
+                renderRecentHistory();
             } catch (error) {
                 addTerminalLine('Connection failed. Initializing retry protocol...', 'error');
                 countryList.innerHTML = '<div class="loading"><span class="blink">CONNECTION_FAILED. RETRYING...</span></div>';
@@ -874,6 +944,9 @@
             selectedCountry = country;
             addTerminalLine(`Accessing entity: ${country.name.common}`, 'info');
 
+            // V3: Add to recent history
+            addToRecentHistory(code);
+
             document.querySelectorAll('.country-item').forEach(item => {
                 item.classList.toggle('active', item.dataset.code === code);
             });
@@ -891,6 +964,74 @@
             document.getElementById('detail-area').textContent = country.area?.toLocaleString() + ' KM²' || 'N/A';
             document.getElementById('detail-density').textContent = country.area ? Math.round(country.population / country.area).toLocaleString() + '/KM²' : 'N/A';
             document.getElementById('detail-rank').textContent = '#' + country.rank;
+
+            // Reset copy button
+            const copyBtn = document.getElementById('copy-btn');
+            copyBtn.classList.remove('copied');
+            copyBtn.textContent = 'COPY_DATA_TO_CLIPBOARD';
+        }
+
+        // V3: Recent History Functions
+        function addToRecentHistory(code) {
+            // Remove if already exists, then add to front
+            recentHistory = recentHistory.filter(c => c !== code);
+            recentHistory.unshift(code);
+            // Keep only 5 recent
+            if (recentHistory.length > 5) recentHistory.pop();
+            localStorage.setItem('worldnet-recent', JSON.stringify(recentHistory));
+            renderRecentHistory();
+        }
+
+        function renderRecentHistory() {
+            const recentList = document.getElementById('recent-list');
+            if (recentHistory.length === 0) {
+                recentList.innerHTML = '<span style="color:var(--matrix-dark)">NONE</span>';
+                return;
+            }
+            recentList.innerHTML = recentHistory.map(code => {
+                const country = countries.find(c => c.cca3 === code);
+                if (!country) return '';
+                return `<div class="recent-chip" onclick="selectCountry('${code}')">${country.name.common.substring(0,8).toUpperCase()}</div>`;
+            }).join('');
+        }
+
+        // V3: Format large numbers
+        function formatNumber(num) {
+            if (num >= 1e12) return (num / 1e12).toFixed(1) + 'T';
+            if (num >= 1e9) return (num / 1e9).toFixed(1) + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
+            if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
+            return num.toString();
+        }
+
+        // V3: Copy country data to clipboard
+        function copyCountryData() {
+            if (!selectedCountry) return;
+
+            const data = `
+ENTITY: ${selectedCountry.name.common}
+REGION: ${selectedCountry.region}
+CAPITAL: ${selectedCountry.capital?.[0] || 'N/A'}
+POPULATION: ${selectedCountry.population?.toLocaleString() || 'N/A'}
+AREA: ${selectedCountry.area?.toLocaleString() + ' KM²' || 'N/A'}
+DENSITY: ${selectedCountry.area ? Math.round(selectedCountry.population / selectedCountry.area).toLocaleString() + '/KM²' : 'N/A'}
+GLOBAL RANK: #${selectedCountry.rank}
+
+Generated by WORLD_NET Terminal
+            `.trim();
+
+            navigator.clipboard.writeText(data).then(() => {
+                const copyBtn = document.getElementById('copy-btn');
+                copyBtn.classList.add('copied');
+                copyBtn.textContent = 'DATA_COPIED_TO_BUFFER';
+                addTerminalLine('Entity data copied to clipboard.', 'success');
+                setTimeout(() => {
+                    copyBtn.classList.remove('copied');
+                    copyBtn.textContent = 'COPY_DATA_TO_CLIPBOARD';
+                }, 2000);
+            }).catch(() => {
+                addTerminalLine('Copy failed. Authorization denied.', 'error');
+            });
         }
 
         // === FAVORITES ===

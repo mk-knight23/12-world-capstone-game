@@ -1,53 +1,64 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
-    --color-os-void: #020617;
-    --color-os-cyan: #06b6d4;
-    --color-os-white: #fafafa;
-}
-
-body {
-    background-color: #020617;
-    color: #06b6d4;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-}
-
-.scanline {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 50;
-    background: linear-gradient(to bottom,
-            transparent 50%,
-            rgba(6, 182, 212, 0.05) 51%);
-    background-size: 100% 4px;
-    animation: scan 10s linear infinite;
-}
-
-@keyframes scan {
-    from {
-        background-position: 0 0;
-    }
-
-    to {
-        background-position: 0 100%;
-    }
-}
-
-.cyber-border {
-    border: 1px solid rgba(6, 182, 212, 0.3);
-    backdrop-filter: blur(4px);
-}
-
+/* Custom scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
-    width: 2px;
+  width: 6px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(6, 182, 212, 0.05);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(6, 182, 212, 0.3);
-    border-radius: 9999px;
+  background: rgba(6, 182, 212, 0.3);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(6, 182, 212, 0.5);
+}
+
+/* Scanline effect */
+.scanline {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Cyber border effect */
+.cyber-border {
+  position: relative;
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  background: rgba(6, 182, 212, 0.02);
+  box-shadow:
+    0 0 20px rgba(6, 182, 212, 0.1),
+    inset 0 0 20px rgba(6, 182, 212, 0.05);
+}
+
+.cyber-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(45deg, rgba(6, 182, 212, 0.3), transparent, rgba(6, 182, 212, 0.3));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.cyber-border:hover::before {
+  opacity: 1;
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Globe, Users, Navigation, Info, X, Zap, Cpu, Database } from 'lucide-react';
+import { Search, Globe, Users, Navigation, Zap, Cpu, Database } from 'lucide-react';
 
 interface Country {
     name: { common: string };
