@@ -20,6 +20,22 @@ function App() {
     const [search, setSearch] = useState('');
     const [selected, setSelected] = useState<Country | null>(null);
     const [selectedRegion, setSelectedRegion] = useState<string>('All');
+    const [typedTitle, setTypedTitle] = useState('');
+
+    // Typing effect for title
+    useEffect(() => {
+        const title = 'WORLD ANALYZER';
+        let i = 0;
+        const timer = setInterval(() => {
+            if (i <= title.length) {
+                setTypedTitle(title.slice(0, i));
+                i++;
+            } else {
+                clearInterval(timer);
+            }
+        }, 100 + Math.random() * 50); // Randomized timing for human feel
+        return () => clearInterval(timer);
+    }, []);
 
     useEffect(() => {
         axios.get('https://restcountries.com/v3.1/all')
@@ -65,7 +81,9 @@ function App() {
                         <Globe className="w-6 h-6" />
                     </div>
                     <div>
-                        <h1 className="text-xl font-black tracking-[0.2em] uppercase">World <span className="text-white">Analyzer</span></h1>
+                        <h1 className="text-xl font-black tracking-[0.2em] uppercase typing-cursor">
+                            <span className="text-white">{typedTitle || 'WORLD ANALYZER'}</span>
+                        </h1>
                         <p className="text-[10px] opacity-60 font-bold uppercase tracking-widest leading-none">MK_OS-X // GEOPOLITICAL DATA UNIT</p>
                     </div>
                 </div>
@@ -105,7 +123,7 @@ function App() {
                                     <button
                                         key={region}
                                         onClick={() => setSelectedRegion(region)}
-                                        className={`px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded transition-all ${
+                                        className={`glitch-hover px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded transition-all ${
                                             selectedRegion === region
                                                 ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/50'
                                                 : 'bg-cyan-500/10 border border-cyan-500/30 hover:border-cyan-500/60'
@@ -126,7 +144,7 @@ function App() {
                                 <button
                                     key={c.cca3}
                                     onClick={() => setSelected(c)}
-                                    className={`w-full p-6 border-b border-cyan-500/10 text-left transition-all hover:bg-cyan-500/5 group flex items-center justify-between ${selected?.cca3 === c.cca3 ? 'bg-cyan-500/10 border-r-4 border-r-cyan-500' : ''}`}
+                                    className={`glitch-hover w-full p-6 border-b border-cyan-500/10 text-left transition-all hover:bg-cyan-500/5 group flex items-center justify-between ${selected?.cca3 === c.cca3 ? 'bg-cyan-500/10 border-r-4 border-r-cyan-500' : ''}`}
                                 >
                                     <div>
                                         <h3 className="text-sm font-black uppercase tracking-tight group-hover:text-white transition-colors">{c.name.common}</h3>
@@ -140,7 +158,7 @@ function App() {
                 </div>
 
                 {/* Content Area */}
-                <div className="flex-1 relative overflow-hidden bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.05)_0%,transparent_70%)]">
+                <div className="flex-1 relative overflow-hidden bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.05)_0%,transparent_70%)] data-stream-bg">
                     <AnimatePresence mode="wait">
                         {selected ? (
                             <motion.div
