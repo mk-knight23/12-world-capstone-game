@@ -1,160 +1,156 @@
-# WORLD_NET // Matrix Data Terminal
+# WORLD_NET // World Data Analyzer
 
 > **Enter the Matrix. Explore global data through the digital realm.** 🟢
 
-An immersive geographic data terminal inspired by The Matrix's iconic visual aesthetic. Browse countries, analyze statistics, and compare nations through a futuristic hacker interface.
+A modern geographic data terminal with a cyberpunk aesthetic. Browse countries, analyze statistics, and explore nations through a futuristic hacker interface built with React 19, Vite 6, and Tailwind CSS v4.
 
-## 🌟 Theme: Matrix / Hacker Terminal
+## 🌟 Theme: Cyberpunk Data Terminal
 
-Immerse yourself in the iconic green-on-black digital world:
-- **Matrix digital rain** background effect (Canvas API)
-- **CRT scanline** and **vignette effects**
-- **Glowing green terminal** typography
-- **Blinking cursor** and animated status indicators
-- **Japanese katakana** characters in the rain
-- **Terminal-style output log** with timestamps
+Immerse yourself in a high-tech digital world:
+- **Scanline overlay** with subtle flicker effect
+- **Cyber border** effects with glowing gradients
+- **Cyan color scheme** for that terminal feel
+- **Typing animation** on the title
+- **Glitch effects** on hover for added character
+- **Data-stream background** animation
 
-## ✨ Features
+## ✨ Features (V5)
 
 ### Core Experience
 - **Real-time global data** from REST Countries API
-- **Population rankings** - Countries sorted by population
-- **Search & filter** - Debounced search with region filtering
-- **Comparison matrix** - Compare any two countries side by side
-- **Favorites system** - Save frequently viewed countries (localStorage)
-- **Terminal output** - Live system messages with timestamps
-- **Live clock** - Real-time system time display
-- **Pagination** - Load 50 countries at a time for performance
+- **Smart search** - Filter countries by name instantly
+- **Region filtering** - Browse by continent/region with dedicated buttons
+- **Result counter** - Shows filtered/total entity count
+- **Keyboard navigation** - Arrow keys, Enter to select, Escape to clear
+- **Responsive layout** - Works on all screen sizes
+- **Accessibility** - Full ARIA labels, focus indicators, reduced motion support
 
 ### Visual Effects
-- Animated Matrix digital rain (Canvas)
-- CRT scanline overlay
-- Screen vignette effect
-- Pulsing logo animation
-- Blinking text indicators
-- Smooth transitions and hover effects
+- Glitch effect on hover (interactive elements)
+- Subtle scanline flicker for authenticity
+- Typing cursor animation in header
+- Organic transition timing (not perfectly smooth)
+- Data-stream background animation
+- Cyber border with gradient glow on hover
 
 ### Data Display
-- Country flag with glowing border
-- Population, area, density calculations
-- Global population ranking
-- Capital city and region tags
-- Save to favorites functionality
+- Country flag with cyber border styling
+- Population, area calculations
+- Region and capital tags
+- Entity ID display
+- Geopolitical assessment section
 
 ## 🛠️ Tech Stack
 
 | Component | Technology |
 |-----------|------------|
-| Format | Single HTML file |
-| Effects | Canvas API (digital rain) |
-| Styling | CSS Variables + Animations |
-| Scripting | Vanilla JavaScript (ES6+) |
+| Framework | React 19 |
+| Build Tool | Vite 6 |
+| Styling | Tailwind CSS v4 |
+| Language | TypeScript |
+| Animations | Framer Motion |
+| Icons | Lucide React |
 | Data | REST Countries API |
-| Storage | localStorage (favorites) |
-| Dependencies | None |
+| HTTP Client | Axios |
 
 ## 🚀 Usage
 
-Simply open `index.html` in any modern browser:
-
 ```bash
-# Direct open
-open index.html
+# Install dependencies
+npm install
 
-# Or with a server
-python -m http.server 8000
-npx serve .
+# Development server
+npm run dev
+
+# Production build
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
 ## 📁 Project Structure
 
 ```
 27-game-world-capstone/
-├── index.html    # Complete terminal application
-├── README.md     # This file
-├── package.json  # Metadata
-└── src/          # (legacy, not used)
+├── src/
+│   ├── App.tsx          # Main application component
+│   ├── main.tsx         # Entry point
+│   └── index.css        # Global styles + Tailwind
+├── index.html           # HTML template
+├── vite.config.ts       # Vite configuration
+├── tsconfig.json        # TypeScript configuration
+└── package.json         # Dependencies
 ```
 
 ## 🎯 How to Use
 
-1. **Browse** - Scroll through the country list (ranked by population)
-2. **Search** - Type to filter countries in real-time
-3. **Filter** - Select a region to narrow results
-4. **Select** - Click a country to view detailed data
-5. **Compare** - Use the comparison dropdown to analyze two countries
-6. **Save** - Click "★ SAVE" to add countries to your favorites bar
+1. **Browse** - View all countries in the sidebar list
+2. **Search** - Type to filter countries by name
+3. **Filter** - Click region buttons to filter by continent
+4. **Select** - Click a country (or use arrow keys + Enter)
+5. **Navigate** - Use Escape to return to list view
 
-## 🌍 Deployment
+## 🎨 V5 Design Philosophy
 
-Deploy the single `index.html` file anywhere:
+### Intentional Imperfections
+V5 introduces "human" touches that break from sterile perfection:
+- **Scanline flicker** - Subtle random opacity variation for authenticity
+- **Glitch effects** - Brief offset on hover adds character
+- **Organic timing** - Transitions aren't perfectly smooth
+- **Typing animation** - Slightly randomized typing speed
 
-```bash
-# GitHub Pages - Push to gh-pages branch
-# Netlify - Drag and drop index.html
-# Vercel - Deploy with zero config
-```
+These choices make the interface feel handcrafted rather than AI-generated.
 
-## 🎨 Visual Features
+## 📝 What Changed in V5
 
-### Digital Rain Effect
-- Canvas-based Japanese character rain
-- Opacity fade trails
-- Responsive to window size
+### V2 - Audit & Cleanup
+- Fixed build configuration (tsconfig.json, vite.config.ts)
+- Created proper Tailwind setup with index.css
+- Removed unused imports
+- Now builds successfully with TypeScript
 
-### Terminal Styling
-- Monospace Courier New font
-- Uppercase text with letter spacing
-- Green (#00ff41) primary color
-- Glowing text shadows
-- Custom scrollbar styling
+### V3 - Region Filter
+- Added dynamic region filter buttons
+- Filter logic now supports both search AND region
+- Result counter shows filtered/total entities
+- Current region indicator in header
+- Increased results from 10 to 20 per page
+
+### V4 - UX & Humanization
+- Added glitch effect on hover for interactive elements
+- Added typing cursor animation with randomized timing
+- Added subtle scanline flicker for authenticity
+- Added organic data-stream background animation
+- Slightly uneven transition timing
+
+### V5 - Accessibility & Polish
+- Added keyboard navigation (arrows, Enter, Escape)
+- Added visible focus indicators
+- Added skip link for keyboard users
+- Added ARIA labels for screen readers
+- Added prefers-reduced-motion support
+- Added high contrast mode support
+- Visual highlight for keyboard navigation
+
+## 🚫 What I Chose NOT to Build
+
+**Data Comparison Feature**: Considered adding a side-by-side comparison view for two countries. Rejected because it would require significant UI rework and the current single-view approach is more focused. Users can view countries one at a time, which aligns with the "terminal" metaphor better.
+
+**Data Export**: No CSV or JSON export functionality. The terminal is designed for viewing, not data processing. If users need to export data, they can use the API directly. Adding export would shift this from a "viewer" to a "tool," which is a different product category.
+
+**Offline Mode**: The application requires an API connection. Adding offline caching with service workers would complicate the build without significant benefit for a data viewer.
 
 ## 🏆 Credits
 
-**Made by MK — Built by Musharraf Kazi**
+**Made by MK — Musharraf Kazi**
 
 ---
 
-*There is no spoon.* 🥄
+## 📜 License
+
+MIT License - feel free to use this for your own projects!
 
 ---
 
-### Live Demo
-- GitHub Pages: <https://mk-knight23.github.io/27-World-Capstone/>
-- Vercel: [Deploy your own](https://vercel.com/new)
-- Netlify: [Deploy your own](https://app.netlify.com/start)
-
----
-
-## 📝 Design Notes (V2)
-
-### Intentional Quirk: The CRT Scanline Flicker
-V2 adds subtle scanline flicker (random opacity variation every frame). It's barely perceptible but adds "texture." Most users won't consciously notice it, but the interface feels more "analog" than sterile digital. The flicker rate (0.98-1.0 opacity) is arbitrary—I tuned it until it felt right, not until it was accurate to real CRTs.
-
-### Tradeoff: No Data Export
-The terminal displays data beautifully but can't export it. No CSV, no JSON download. The tradeoff: purity vs. utility. Export features would require backend infrastructure. This is a frontend showcase—data stays ephemeral. Humans can screenshot if they really need it.
-
-### What I Chose NOT to Build
-No command history or autocomplete. Real terminals remember commands. This one doesn't. Each query is fresh. The decision: simplicity over power-user features. The terminal is a display, not a shell. Adding history would require state management that's overkill for the experience.
-
-## 🎉 Additional Features (V3)
-
-Three focused enhancements that improve data utility without breaking the terminal aesthetic:
-
-### Recent History Bar
-**Why added**: After browsing several countries, you might want to jump back to something you saw earlier. Without history, you're scrolling through the list again.
-
-**What changed**: A new "RECENT" bar below the filters shows your last 5 viewed countries as clickable chips. History persists across sessions using localStorage.
-
-### World Population Display
-**Why added**: The terminal shows individual country populations, but no context for global scale. Seeing 1.4B for China means more when you know the world total.
-
-**What changed**: The footer now displays "WORLD_POP" with the aggregated population of all countries (~8.1B). Updates automatically when data loads.
-
-### Copy to Clipboard
-**Why added**: The V2 README mentioned "no data export" as an intentional tradeoff. But sometimes you just want to copy one country's stats without screenshotting.
-
-**What changed**: Added a "COPY_DATA_TO_CLIPBOARD" button below the terminal output. It copies the selected country's data as formatted text. The button flashes green when copied, with a terminal log message confirming success.
-
-### Intentionally Rejected: CSV Export
-I still rejected full CSV/JSON export for all countries. That would require backend infrastructure or complex client-side processing. The copy button gives you a quick way to grab one entity's data—which covers 90% of actual use cases. If you need bulk export, use the API directly.
+*The Matrix has you...* 🟢
