@@ -72,7 +72,7 @@ npm run preview
 ## 📁 Project Structure
 
 ```
-27-game-world-capstone/
+27-game-world-net/
 ├── src/
 │   ├── App.tsx          # Main application component
 │   ├── main.tsx         # Entry point
