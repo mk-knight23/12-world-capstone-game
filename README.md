@@ -1,167 +1,195 @@
 # 27-game-world-net
 
-> **Orbital Link Established. Accessing Geopolitical Database...** 🟢
+**A Cyberpunk Geopolitical World Analyzer**
 
-A premium geographic data analyzer with a Matrix-green cyberpunk aesthetic. Browse countries, analyze statistics, and explore nations through a high-precision digital terminal built with React 19, Vite 6, and Tailwind CSS v4.
+Explore countries, compare statistics, and test your geography knowledge in a stunning cyberpunk interface.
 
 ---
 
-## 🎮 Live Demos
+## 🎮 Live Demo
 
 | Platform | URL |
 |----------|-----|
 | **Vercel** | [27-game-world-net.vercel.app](https://27-game-world-net.vercel.app) |
-| **Render** | [two7-game-world-net.onrender.com](https://two7-game-world-net.onrender.com) |
 
 ---
 
-## 🌟 Theme: Cyberpunk Data Terminal
+## 🌟 Features
 
-Immerse yourself in a high-tech digital world:
-- **Scanline overlay** with subtle flicker effect
-- **Cyber border** effects with glowing gradients
-- **Cyan color scheme** for that terminal feel
-- **Typing animation** on the title
-- **Glitch effects** on hover for added character
-- **Data-stream background** animation
+### Core Gameplay
+- **Country Database**: Comprehensive country information
+- **Cyberpunk UI**: Modern dark theme with neon accents
+- **React 19**: Latest React features with hooks
+- **Responsive Design**: Works on all devices
 
-## ✨ Features (V5)
+### 🆕 New Features (V2)
 
-### Core Experience
-- **Real-time global data** from REST Countries API
-- **Smart search** - Filter countries by name instantly
-- **Region filtering** - Browse by continent/region with dedicated buttons
-- **Result counter** - Shows filtered/total entity count
-- **Keyboard navigation** - Arrow keys, Enter to select, Escape to clear
-- **Responsive layout** - Works on all screen sizes
-- **Accessibility** - Full ARIA labels, focus indicators, reduced motion support
+#### 1. Interactive 3D Globe
+- **Three.js Rendering**: Beautiful 3D globe with atmosphere glow
+- **Country Markers**: Visual markers for selected countries
+- **Drag to Rotate**: Interactive rotation controls
+- **Zoom**: Mouse wheel to zoom in/out
+- **Auto-rotation**: Smooth automatic rotation
+- **Atmosphere Effects**: Realistic atmospheric glow shader
 
-### Visual Effects
-- Glitch effect on hover (interactive elements)
-- Subtle scanline flicker for authenticity
-- Typing cursor animation in header
-- Organic transition timing (not perfectly smooth)
-- Data-stream background animation
-- Cyber border with gradient glow on hover
+#### 2. Real-time Weather Data
+- **Current Conditions**: Live weather for country capitals
+- **Temperature Display**: Color-coded temperature indicators
+- **Weather Icons**: Visual weather condition icons
+- **Humidity & Wind**: Additional weather metrics
+- **Smart Caching**: 30-minute cache for performance
+- **Multiple Countries**: Batch weather fetching
 
-### Data Display
-- Country flag with cyber border styling
-- Population, area calculations
-- Region and capital tags
-- Entity ID display
-- Geopolitical assessment section
+**Weather Data Includes:**
+- Temperature (°C/°F)
+- Weather condition (Sunny, Cloudy, Rainy, etc.)
+- Humidity percentage
+- Wind speed (km/h)
+- Weather icons
+
+#### 3. Country Comparison Tool
+- **Side-by-Side Comparison**: Compare up to 4 countries
+- **Multiple Metrics**: Population, GDP, Area, Density, Growth Rate
+- **Ranking System**: Automatic ranking for each metric
+- **Percentage Differences**: Visual comparison indicators
+- **Similarity Score**: Find countries with similar profiles
+- **Chart Data**: Export comparison data for charts
+
+**Comparison Metrics:**
+- 📊 Population
+- 💰 GDP & GDP per Capita
+- 🗺️ Land Area
+- 👥 Population Density
+- 📈 Growth Rate
+
+#### 4. Quiz/Challenge Mode
+- **Multiple Question Types**: Capital, Population, Flag, Location, Currency, Landmark
+- **Difficulty Levels**: Easy, Medium, Hard with varying points
+- **Time Limits**: Challenge yourself against the clock
+- **Score Tracking**: Accumulate points for correct answers
+- **Leaderboard**: Compete for high scores
+- **Ranks**: Earn titles from "Tourist" to "Geography Genius"
+
+**Question Types:**
+- 🏛️ Capital cities
+- 👥 Population estimates
+- 🚩 Flag identification
+- 🗺️ Geographic regions
+- 💱 Currency recognition
+- 🏛️ Famous landmarks
+
+**Ranks:**
+- 🏆 Geography Genius (90%+)
+- 🌍 World Explorer (75%+)
+- ✈️ Globe Trotter (60%+)
+- 🗺️ Traveler (40%+)
+- 🧳 Tourist (<40%)
+
+#### 5. Offline Data Caching
+- **localStorage Caching**: Store country data locally
+- **IndexedDB Support**: Large dataset support via IndexedDB
+- **Smart Expiry**: Configurable cache expiry (default 24h)
+- **Cache Metadata**: Track cache size and age
+- **Search Offline**: Search cached countries without internet
+- **Preload Data**: Automatically cache for offline use
+- **Incremental Updates**: Update cache with new data
+
+**Cache Features:**
+- Automatic compression
+- Version management
+- Size estimation
+- Expiry tracking
+- Clear cache option
 
 ## 🛠️ Tech Stack
+- **Frontend**: React 19, TypeScript, Vite 6
+- **3D Graphics**: Three.js
+- **State Management**: Zustand
+- **Styling**: Tailwind CSS v4
+- **Routing**: React Router 7
 
-| Component | Technology |
-|-----------|------------|
-| Framework | React 19 |
-| Build Tool | Vite 6 |
-| Styling | Tailwind CSS v4 |
-| Language | TypeScript |
-| Animations | Framer Motion |
-| Icons | Lucide React |
-| Data | REST Countries API |
-| HTTP Client | Axios |
+## 🚀 Getting Started
 
-## 🚀 Usage
+### Prerequisites
+- Node.js 18+
+- npm or yarn
 
+### Installation
 ```bash
+# Clone the repository
+git clone https://github.com/mk-knight23/27-game-world-net.git
+
 # Install dependencies
 npm install
 
-# Development server
+# Start dev server
 npm run dev
 
-# Production build
+# Build for production
 npm run build
-
-# Preview production build
-npm run preview
 ```
 
-## 📁 Project Structure
+## 📖 Usage
 
-```
-27-game-world-net/
-├── src/
-│   ├── App.tsx          # Main application component
-│   ├── main.tsx         # Entry point
-│   └── index.css        # Global styles + Tailwind
-├── index.html           # HTML template
-├── vite.config.ts       # Vite configuration
-├── tsconfig.json        # TypeScript configuration
-└── package.json         # Dependencies
-```
+### Exploring Countries
+1. Browse the country database
+2. Click on any country for details
+3. Use the 3D globe for visual exploration
+4. Check real-time weather data
 
-## 🎯 How to Use
+### Comparing Countries
+1. Select up to 4 countries
+2. View side-by-side statistics
+3. See rankings for each metric
+4. Calculate percentage differences
 
-1. **Browse** - View all countries in the sidebar list
-2. **Search** - Type to filter countries by name
-3. **Filter** - Click region buttons to filter by continent
-4. **Select** - Click a country (or use arrow keys + Enter)
-5. **Navigate** - Use Escape to return to list view
+### Taking Quizzes
+1. Choose quiz difficulty
+2. Answer questions before time runs out
+3. Earn points for correct answers
+4. Climb the leaderboard
 
-## 🎨 V5 Design Philosophy
+### Offline Mode
+1. Data is automatically cached
+2. Access country info without internet
+3. Search cached data
+4. Manage cache settings
 
-### Intentional Imperfections
-V5 introduces "human" touches that break from sterile perfection:
-- **Scanline flicker** - Subtle random opacity variation for authenticity
-- **Glitch effects** - Brief offset on hover adds character
-- **Organic timing** - Transitions aren't perfectly smooth
-- **Typing animation** - Slightly randomized typing speed
+## 🎨 Features
 
-These choices make the interface feel handcrafted rather than AI-generated.
+### Interactive Globe
+- Smooth 3D rotation
+- Country markers
+- Atmosphere glow
+- Zoom controls
 
-## 📝 What Changed in V5
+### Weather Integration
+- Real-time updates
+- Color-coded temperatures
+- Weather icons
+- Humidity & wind data
 
-### V2 - Audit & Cleanup
-- Fixed build configuration (tsconfig.json, vite.config.ts)
-- Created proper Tailwind setup with index.css
-- Removed unused imports
-- Now builds successfully with TypeScript
+### Comparison Tools
+- Multi-country compare
+- Various metrics
+- Visual rankings
+- Similarity matching
 
-### V3 - Region Filter
-- Added dynamic region filter buttons
-- Filter logic now supports both search AND region
-- Result counter shows filtered/total entities
-- Current region indicator in header
-- Increased results from 10 to 20 per page
+### Quiz System
+- 6 question types
+- 3 difficulty levels
+- Time challenges
+- Score tracking
 
-### V4 - UX & Humanization
-- Added glitch effect on hover for interactive elements
-- Added typing cursor animation with randomized timing
-- Added subtle scanline flicker for authenticity
-- Added organic data-stream background animation
-- Slightly uneven transition timing
+### Offline Support
+- localStorage caching
+- IndexedDB for large data
+- Smart expiry
+- Search capability
 
-### V5 - Accessibility & Polish
-- Added keyboard navigation (arrows, Enter, Escape)
-- Added visible focus indicators
-- Added skip link for keyboard users
-- Added ARIA labels for screen readers
-- Added prefers-reduced-motion support
-- Added high contrast mode support
-- Visual highlight for keyboard navigation
+## 📝 License
 
-## 🚫 What I Chose NOT to Build
-
-**Data Comparison Feature**: Considered adding a side-by-side comparison view for two countries. Rejected because it would require significant UI rework and the current single-view approach is more focused. Users can view countries one at a time, which aligns with the "terminal" metaphor better.
-
-**Data Export**: No CSV or JSON export functionality. The terminal is designed for viewing, not data processing. If users need to export data, they can use the API directly. Adding export would shift this from a "viewer" to a "tool," which is a different product category.
-
-**Offline Mode**: The application requires an API connection. Adding offline caching with service workers would complicate the build without significant benefit for a data viewer.
-
-## 🏆 Credits
-
-**Made by MK — Musharraf Kazi**
+MIT License - feel free to use this project for learning or inspiration.
 
 ---
-
-## 📜 License
-
-MIT License - feel free to use this for your own projects!
-
----
-
-*The Matrix has you...* 🟢
+*Made by MK — Musharraf Kazi*
