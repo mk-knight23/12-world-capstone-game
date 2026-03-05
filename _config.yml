@@ -1,0 +1,15 @@
+# GitHub Pages Configuration
+theme: jekyll-theme-cayman
+title: Cyberpunk World Analyzer
+description: Documentation for 27-game-world-net
+baseurl: /27-game-world-net
+url: https://mk-knight23.github.io
+
+# Navigation
+nav:
+  - title: Home
+    url: /
+  - title: Architecture
+    url: /architecture/
+  - title: API
+    url: /api/
